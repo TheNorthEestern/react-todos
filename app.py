@@ -16,13 +16,14 @@ db = SQLAlchemy(app)
 
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    priority = db.Column(db.Integer, nullable=True, autoincrement=True)
+    priority = db.Column(db.Integer, nullable=True)
     todo_is_completed = db.Column(db.Boolean)
     todo_text = db.Column(db.String)
     created_at = db.Column(db.DateTime, default=datetime.datetime.now())
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.now())
 
     def __init__(self, todo_is_completed=False, todo_text=""):
+        # In Lieu of a database agnostic solution, this will have to do for now
         num_todos = db.session.query(Todo).count()
         if not num_todos:
             self.priority = 1

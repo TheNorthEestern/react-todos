@@ -1,10 +1,11 @@
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.admin import Admin, BaseView, expose
+from flask.ext.admin import Admin
 from flask.ext.admin.contrib.sqla import ModelView
 
 from sqlalchemy.sql import func
 
+import flask.ext.restless
 import datetime
 
 app = Flask(__name__)
@@ -37,7 +38,7 @@ class Todo(db.Model):
         return "<Todo('%s', '%s', '%s')>" % (self.priority, self.todo_is_completed, self.todo_text)
 
 class TodosView(ModelView):
-    form_excluded_columns = ('priority',)
+    form_excluded_columns = ('priority', 'created_at', 'updated_at')
 
     def __init__(self, session, **kwargs):
         super(TodosView, self).__init__(Todo, session, **kwargs)
@@ -45,8 +46,8 @@ class TodosView(ModelView):
 admin = Admin(app, name="Todos")
 admin.add_view(TodosView(db.session, name="All Todos"))
 
-def init_db():
-    db.create_all()
+api_manager = flask.ext.restless.APIManager(app, flask_sqlalchemy_db=db)
+api_manager.create_api(Todo, collection_name='todos', url_prefix='/api/v1', methods=['GET', 'POST', 'DELETE', 'UPDATE'])
 
 if __name__ == '__main__':
     app.run()

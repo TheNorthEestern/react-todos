@@ -2,6 +2,7 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.admin import Admin
 from flask.ext.admin.contrib.sqla import ModelView
+from flask.ext.cors import CORS
 
 from sqlalchemy.sql import func
 
@@ -14,6 +15,7 @@ app.config['DEBUG'] = True
 app.config['SECRET_KEY'] = 'fhalr-280ur02842'
 
 db = SQLAlchemy(app)
+CORS(app, resouces=r'/api/v1/*', allow_headers='Content-Type')
 
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)

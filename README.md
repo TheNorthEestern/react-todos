@@ -1,6 +1,5 @@
 # Getting Started
 
-- Install [bower](http://bower.io/)
 - Install [virtualenvwrapper](https://virtualenvwrapper.readthedocs.org/en/latest/)
 - Run `mkvirtualenv <Your Desired Environment Name>`
 - `git clone git@github.com:TheNorthEestern/reagara-todos.git`

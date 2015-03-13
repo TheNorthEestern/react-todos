@@ -14,6 +14,23 @@ var TodoContainer = React.createClass({
       }.bind(this)
     });
   },
+  handleTodoSubmission: function(todo) {
+    var todos = this.state.data;
+    var newTodos = todos.concat([todo]);
+    this.setState({data: newTodos});
+    $.ajax({
+      url: this.props.url,
+      contentType:'application/json',
+      method: 'POST',
+      data: JSON.stringify(todo),
+      success: function(data) {
+        console.log(data, "created")
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(this.props.url, status, err.toString()); 
+      }.bind(this)
+    });
+  },
   componentDidMount: function() {
     this.getTodosOnLoad();
   },
@@ -21,11 +38,11 @@ var TodoContainer = React.createClass({
     return ( 
       <div className="todo-container">
         <h1 className="todo-container-title">Todos</h1>
-        <TodoForm url={this.props.url} />
+        <TodoForm onTodoSubmit={this.handleTodoSubmission} url={this.props.url} />
         <TodoList data={this.state.data} />
         <footer className="todo-list-footer">
           <GenericCounter initialCount={0}/>
-          <TodoCheckboxManager />
+          <TodoCheckboxManager checkAllMembers={this.finishAllTasks} />
         </footer>
       </div>
     );
@@ -43,20 +60,8 @@ var TodoForm = React.createClass({
         todo_text: todoText,
         todo_is_completed: false 
       };
-      alert(this.props.url);
-      $.ajax({
-        url: this.props.url,
-        contentType:'application/json',
-        method: 'POST',
-        data: JSON.stringify(data),
-        success: function(data) {
-          console.log(data) 
-          this.refs.todoText.value = "";
-        }.bind(this),
-        error: function(xhr, status, err) {
-          console.error(this.props.url, status, err.toString()); 
-        }.bind(this)
-      });
+      this.props.onTodoSubmit(data);
+      React.findDOMNode(this.refs.todoText).value = "";
     }
   },
   render: function() {
@@ -89,11 +94,23 @@ var TodoList = React.createClass({
 });
 
 var TodoItem = React.createClass({
+  getInitialState: function() {
+    return {
+      complete: (!!this.props.complete) || false
+    };
+  },
+  handleChange: function(){
+    this.setState({
+      complete: !this.state.complete 
+    });
+  },
   render: function() {
+    var labelStyle={
+      'textDecoration': this.state.complete?'line-through':'' 
+    };
     return (
       <li key={this.props.key}>
-        <TodoCheckbox />
-        {this.props.children}
+        <label style={labelStyle}><TodoCheckbox />{this.props.children.toString()}</label>
       </li>
     ) 
   }
@@ -108,17 +125,25 @@ var TodoSubmitButton = React.createClass({
 });
 
 var TodoCheckbox = React.createClass({
+  getInitialState: function() {
+    return {
+      complete: (!!this.props.complete) || false
+    };
+  },
   render: function() {
     return (
-      <input type="checkbox" name="todo_is_completed" />
+      <input className="todo-checkbox" ref="complete" defaultChecked={this.state.complete} type="checkbox" name="todo_is_completed" />
     );
   }
 });
 
 var TodoCheckboxManager = React.createClass({
+  handleChange: function(e) {
+    alert('This functionality was not implemented.')
+  },
   render: function() {
     return (
-      <a onChange={this.handleChange} ref="checkboxManager" href="#">Mark all as complete</a> 
+      <p className="all-complete" onClick={this.handleChange} ref="checkboxManager">Mark all as complete</p> 
     ) 
   }
 });

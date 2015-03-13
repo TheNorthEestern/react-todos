@@ -5,7 +5,6 @@
 - Run `mkvirtualenv <Your Desired Environment Name>`
 - `git clone git@github.com:TheNorthEestern/reagara-todos.git`
 - `pip install -r requirements.txt`
-- `bower install`
 - `python app.py`
 
 Go to [http://localhost:5000](http://localhost:5000) in your browser and

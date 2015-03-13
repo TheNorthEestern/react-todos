@@ -1,0 +1,71 @@
+html {
+  background-color: rgb(246, 245, 245);
+  font-family: 'Open Sans', sans-serif;
+}
+html, body {
+  /* Kickin it old school 
+   * could've flexboxed this
+   * */
+  width: 500px;
+  margin: 0 auto;
+}
+#todo-list {
+  margin: 0 auto; 
+  margin-top: 95px;
+}
+#todo-list li:nth-child(odd) {
+  background-color: rgb(244,247,250);
+}
+#todo-list ul {
+  padding: 0; 
+}
+#todo-list li {
+  list-style-type: none; 
+  padding: 10px 0 10px 15px;
+}
+#todo-list li:hover {
+  cursor: pointer; 
+}
+.todo-list-footer {
+  border-top: 1px dashed rgb(219, 217, 217);
+}
+.todo-container {
+  width: 500px;
+  background-color: white;
+  border: 1px solid rgb(232, 232, 232);
+  border-radius: 5px;
+}
+.todo-container-title {
+  border-bottom: 1px dashed rgb(219, 217, 217); 
+  text-align: center;
+  padding-bottom: 35px;
+}
+.todo-form {
+  text-align: center;
+}
+.todo-form input[type=submit] {
+  background-color: orange;
+  border: 1px solid rgb(181, 181, 181);
+  border-radius: 4px;
+  font-size: .7em;
+  letter-spacing: .5px;
+  font-weight: bold;
+  padding: 0 42px 0 42px; 
+  height: 40px;
+  color: rgb(110, 109, 110);
+  background: linear-gradient( to bottom, rgb(235, 234, 233) 50%, rgb(235, 234, 233) 50%, rgb(217, 216, 215) 50% );
+}
+.todo-form input:focus {
+  outline: none; 
+}
+.todo-form input[type=text] {
+  border: 2px solid rgb(229, 228, 229);
+  border-radius: 4px;
+  font-size: 1em;
+  line-height: 1.2em;
+  margin-right: 10px;
+  height: 27px;
+  padding: 5px;
+  padding-left: 12px;
+  width: 270px; 
+}

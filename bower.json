@@ -1,0 +1,21 @@
+{
+  "name": "learning_react",
+  "version": "0.0.0",
+  "authors": [
+    "Kacy James <inquen@gmail.com>"
+  ],
+  "main": "index.html",
+  "license": "MIT",
+  "homepage": "http://kacyjam.es",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.3"
+  }
+}

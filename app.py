@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.admin import Admin
 from flask.ext.admin.contrib.sqla import ModelView
@@ -45,11 +45,19 @@ class TodosView(ModelView):
     def __init__(self, session, **kwargs):
         super(TodosView, self).__init__(Todo, session, **kwargs)
 
+@app.route('/')
+def index(name=None):
+    return render_template('index.html', name=name)
+
 admin = Admin(app, name="Todos")
 admin.add_view(TodosView(db.session, name="All Todos"))
 
 api_manager = flask.ext.restless.APIManager(app, flask_sqlalchemy_db=db)
-api_manager.create_api(Todo, collection_name='todos', url_prefix='/api/v1', methods=['GET', 'POST', 'DELETE', 'UPDATE'])
+api_manager.create_api(Todo, 
+                       collection_name='todos', 
+                       url_prefix='/api/v1', 
+                       exclude_columns=['created_at', 'updated_at'], 
+                       methods=['GET', 'POST', 'UPDATE'])
 
 if __name__ == '__main__':
     app.run()

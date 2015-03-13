@@ -7,5 +7,8 @@
 - `pip install -r requirements.txt`
 - `python app.py`
 
+After creating 10 todos, the API paginates all new ones, so they will
+not appear on the todo list after reloading the page
+
 Go to [http://localhost:5000](http://localhost:5000) in your browser and
 check it out

@@ -54,3 +54,4 @@ docs/_build/
 # PyBuilder
 target/
 node_modules/
+static/dist/.module-cache

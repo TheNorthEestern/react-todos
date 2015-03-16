@@ -26,6 +26,9 @@ html, body {
 #todo-list li:hover {
   cursor: pointer; 
 }
+#todo-list li:hover > * {
+  cursor: pointer; 
+}
 .todo-list-footer {
   border-top: 1px dashed rgb(219, 217, 217);
 }
@@ -44,7 +47,6 @@ html, body {
   text-align: center;
 }
 .todo-form input[type=submit] {
-  background-color: orange;
   border: 1px solid rgb(181, 181, 181);
   border-radius: 4px;
   font-size: .7em;
@@ -68,4 +70,26 @@ html, body {
   padding: 5px;
   padding-left: 12px;
   width: 270px; 
+}
+.todo-checkbox {
+  margin-right: 10px;
+}
+.todo-checkbox + span {
+  font-size: 14px;
+}
+.all-complete {
+  text-align: right;
+  color: rgb(85, 151, 208);
+  font-size: 13px;
+  margin-right: 25px;
+  cursor: pointer;
+}
+.todo-list-footer {
+  padding-bottom: 10px;
+}
+.remaining-text {
+  float: left;
+  font-size: 13px;
+  color: rgb(180, 180, 180);
+  margin-left: 15px;
 }

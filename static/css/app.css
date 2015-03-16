@@ -87,3 +87,9 @@ html, body {
 .todo-list-footer {
   padding-bottom: 10px;
 }
+.remaining-text {
+  float: left;
+  font-size: 13px;
+  color: rgb(180, 180, 180);
+  margin-left: 15px;
+}

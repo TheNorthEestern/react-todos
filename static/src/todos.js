@@ -31,6 +31,14 @@ var TodoContainer = React.createClass({
       }.bind(this)
     });
   },
+  finishAllTasks: function() {
+    var todoList = this.refs.theTodoList.refs;
+    for (todo in todoList) {
+      if (todoList.hasOwnProperty(todo)) {
+        todoList[todo].finishTodo();
+      } 
+    }
+  },
   componentDidMount: function() {
     this.getTodosOnLoad();
   },
@@ -39,7 +47,7 @@ var TodoContainer = React.createClass({
       <div className="todo-container">
         <h1 className="todo-container-title">Todos</h1>
         <TodoForm onTodoSubmit={this.handleTodoSubmission} url={this.props.url} />
-        <TodoList data={this.state.data} url={this.props.url} />
+        <TodoList ref="theTodoList" data={this.state.data} url={this.props.url} />
         <footer className="todo-list-footer">
           <GenericCounter initialCount={0}/>
           <TodoCheckboxManager checkAllMembers={this.finishAllTasks} />
@@ -76,9 +84,9 @@ var TodoForm = React.createClass({
 
 var TodoList = React.createClass({
   render: function() {
-    var todos = this.props.data.map(function(todo){
+    var todos = this.props.data.map(function(todo, i){
       return (
-        <TodoItem key={todo.id} todoID={todo.id} todo_is_completed={todo.todo_is_completed} url={this.props.url}>
+        <TodoItem ref={'todo' + i} key={todo.id} todoID={todo.id} todo_is_completed={todo.todo_is_completed} url={this.props.url}>
           {todo.todo_text}
         </TodoItem>
       ) 
@@ -94,24 +102,40 @@ var TodoList = React.createClass({
 });
 
 var TodoItem = React.createClass({
-  handleChange: function() {
-    this.setState({complete: !this.state.complete})
-    var updatedTodo = {
-      todo_is_completed: !this.state.complete
-    }
-    this.setState({data: updatedTodo})
+  updateTodo: function(updatedTodo) {
     $.ajax({
       url: this.props.url + '/' + this.props.todoID,
       contentType:'application/json',
       method: 'PATCH',
       data: JSON.stringify(updatedTodo),
       success: function(data) {
-        console.log(data, "created")
+        console.log(data, "updated")
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(this.props.url, status, err.tostring()); 
       }.bind(this)
     });
+  },
+  finishTodo: function() {
+    this.setState({complete: true})
+
+    var updatedTodo = {
+      todo_is_completed: true
+    }
+
+    this.setState({data: updatedTodo})
+    this.updateTodo(updatedTodo)
+
+  },
+  handleChange: function() {
+    this.setState({complete: !this.state.complete})
+
+    var updatedTodo = {
+      todo_is_completed: !this.state.complete
+    }
+
+    this.setState({data: updatedTodo})
+    this.updateTodo(updatedTodo);
   },
   getInitialState: function() {
     return ({complete: this.props.todo_is_completed});
@@ -149,12 +173,9 @@ var TodoCheckbox = React.createClass({
 });
 
 var TodoCheckboxManager = React.createClass({
-  handleChange: function(e) {
-    alert('This functionality was not implemented.')
-  },
   render: function() {
     return (
-      <p className="all-complete" onClick={this.handleChange} ref="checkboxManager">Mark all as complete</p> 
+      <p className="all-complete" onClick={this.props.checkAllMembers} ref="checkboxManager">Mark all as complete</p> 
     ) 
   }
 });

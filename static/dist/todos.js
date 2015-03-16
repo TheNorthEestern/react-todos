@@ -31,6 +31,14 @@ var TodoContainer = React.createClass({displayName: "TodoContainer",
       }.bind(this)
     });
   },
+  finishAllTasks: function() {
+    var todoList = this.refs.theTodoList.refs;
+    for (todo in todoList) {
+      if (todoList.hasOwnProperty(todo)) {
+        todoList[todo].finishTodo();
+      } 
+    }
+  },
   componentDidMount: function() {
     this.getTodosOnLoad();
   },
@@ -39,7 +47,7 @@ var TodoContainer = React.createClass({displayName: "TodoContainer",
       React.createElement("div", {className: "todo-container"}, 
         React.createElement("h1", {className: "todo-container-title"}, "Todos"), 
         React.createElement(TodoForm, {onTodoSubmit: this.handleTodoSubmission, url: this.props.url}), 
-        React.createElement(TodoList, {data: this.state.data, url: this.props.url}), 
+        React.createElement(TodoList, {ref: "theTodoList", data: this.state.data, url: this.props.url}), 
         React.createElement("footer", {className: "todo-list-footer"}, 
           React.createElement(GenericCounter, {initialCount: 0}), 
           React.createElement(TodoCheckboxManager, {checkAllMembers: this.finishAllTasks})
@@ -76,9 +84,9 @@ var TodoForm = React.createClass({displayName: "TodoForm",
 
 var TodoList = React.createClass({displayName: "TodoList",
   render: function() {
-    var todos = this.props.data.map(function(todo){
+    var todos = this.props.data.map(function(todo, i){
       return (
-        React.createElement(TodoItem, {key: todo.id, todoID: todo.id, todo_is_completed: todo.todo_is_completed, url: this.props.url}, 
+        React.createElement(TodoItem, {ref: 'todo' + i, key: todo.id, todoID: todo.id, todo_is_completed: todo.todo_is_completed, url: this.props.url}, 
           todo.todo_text
         )
       ) 
@@ -94,24 +102,40 @@ var TodoList = React.createClass({displayName: "TodoList",
 });
 
 var TodoItem = React.createClass({displayName: "TodoItem",
-  handleChange: function() {
-    this.setState({complete: !this.state.complete})
-    var updatedTodo = {
-      todo_is_completed: !this.state.complete
-    }
-    this.setState({data: updatedTodo})
+  updateTodo: function(updatedTodo) {
     $.ajax({
       url: this.props.url + '/' + this.props.todoID,
       contentType:'application/json',
       method: 'PATCH',
       data: JSON.stringify(updatedTodo),
       success: function(data) {
-        console.log(data, "created")
+        console.log(data, "updated")
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(this.props.url, status, err.tostring()); 
       }.bind(this)
     });
+  },
+  finishTodo: function() {
+    this.setState({complete: true})
+
+    var updatedTodo = {
+      todo_is_completed: true
+    }
+
+    this.setState({data: updatedTodo})
+    this.updateTodo(updatedTodo)
+
+  },
+  handleChange: function() {
+    this.setState({complete: !this.state.complete})
+
+    var updatedTodo = {
+      todo_is_completed: !this.state.complete
+    }
+
+    this.setState({data: updatedTodo})
+    this.updateTodo(updatedTodo);
   },
   getInitialState: function() {
     return ({complete: this.props.todo_is_completed});
@@ -149,12 +173,9 @@ var TodoCheckbox = React.createClass({displayName: "TodoCheckbox",
 });
 
 var TodoCheckboxManager = React.createClass({displayName: "TodoCheckboxManager",
-  handleChange: function(e) {
-    alert('This functionality was not implemented.')
-  },
   render: function() {
     return (
-      React.createElement("p", {className: "all-complete", onClick: this.handleChange, ref: "checkboxManager"}, "Mark all as complete") 
+      React.createElement("p", {className: "all-complete", onClick: this.props.checkAllMembers, ref: "checkboxManager"}, "Mark all as complete") 
     ) 
   }
 });

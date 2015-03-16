@@ -20,14 +20,14 @@ var TodoContainer = React.createClass({
     this.setState({data: newTodos});
     $.ajax({
       url: this.props.url,
-      contentType:'application/json',
-      method: 'POST',
-      data: JSON.stringify(todo),
+      contenttype:'application/json',
+      method: 'post',
+      data: json.stringify(todo),
       success: function(data) {
         console.log(data, "created")
       }.bind(this),
       error: function(xhr, status, err) {
-        console.error(this.props.url, status, err.toString()); 
+        console.error(this.props.url, status, err.tostring()); 
       }.bind(this)
     });
   },
@@ -39,7 +39,7 @@ var TodoContainer = React.createClass({
       <div className="todo-container">
         <h1 className="todo-container-title">Todos</h1>
         <TodoForm onTodoSubmit={this.handleTodoSubmission} url={this.props.url} />
-        <TodoList data={this.state.data} />
+        <TodoList data={this.state.data} url={this.props.url} />
         <footer className="todo-list-footer">
           <GenericCounter initialCount={0}/>
           <TodoCheckboxManager checkAllMembers={this.finishAllTasks} />
@@ -56,11 +56,11 @@ var TodoForm = React.createClass({
     if (!todoText) {
       alert('No text entered'); 
     } else {
-      var data = {
+      var todo = {
         todo_text: todoText,
         todo_is_completed: false 
       };
-      this.props.onTodoSubmit(data);
+      this.props.onTodoSubmit(todo);
       React.findDOMNode(this.refs.todoText).value = "";
     }
   },
@@ -78,11 +78,11 @@ var TodoList = React.createClass({
   render: function() {
     var todos = this.props.data.map(function(todo){
       return (
-        <TodoItem key={todo.id} todo_is_completed={todo.todo_is_completed}>
+        <TodoItem key={todo.id} todoID={todo.id} todo_is_completed={todo.todo_is_completed} url={this.props.url}>
           {todo.todo_text}
         </TodoItem>
       ) 
-    })
+    }.bind(this))
     return (
       <section>
         <ul>
@@ -96,6 +96,22 @@ var TodoList = React.createClass({
 var TodoItem = React.createClass({
   handleChange: function() {
     this.setState({complete: !this.state.complete})
+    var updatedTodo = {
+      todo_is_completed: !this.state.complete
+    }
+    this.setState({data: updatedTodo})
+    $.ajax({
+      url: this.props.url + '/' + this.props.todoID,
+      contentType:'application/json',
+      method: 'PATCH',
+      data: JSON.stringify(updatedTodo),
+      success: function(data) {
+        console.log(data, "created")
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(this.props.url, status, err.tostring()); 
+      }.bind(this)
+    });
   },
   getInitialState: function() {
     return ({complete: this.props.todo_is_completed});
@@ -106,8 +122,8 @@ var TodoItem = React.createClass({
       'color': 'gray'
     };
     return (
-      <li key={this.props.key}>
-        <label style={componentStyle}><TodoCheckbox initialState={this.state.complete} parentAction={this.handleChange} />{this.props.children.toString()}</label>
+      <li>
+        <label style={componentStyle}><TodoCheckbox currentState={this.state.complete} parentAction={this.handleChange} />{this.props.children.toString()}</label>
       </li>
     ) 
   }
@@ -127,7 +143,7 @@ var TodoCheckbox = React.createClass({
   },
   render: function() {
     return (
-      <input className="todo-checkbox" checked={this.props.initialState} onChange={this.props.parentAction} type="checkbox" name="todo_is_completed" />
+      <input className="todo-checkbox" checked={this.props.currentState} onChange={this.props.parentAction} type="checkbox" name="todo_is_completed" />
     );
   }
 });

@@ -78,7 +78,7 @@ var TodoList = React.createClass({
   render: function() {
     var todos = this.props.data.map(function(todo){
       return (
-        <TodoItem key={todo.id}>
+        <TodoItem key={todo.id} todo_is_completed={todo.todo_is_completed}>
           {todo.todo_text}
         </TodoItem>
       ) 
@@ -94,23 +94,20 @@ var TodoList = React.createClass({
 });
 
 var TodoItem = React.createClass({
-  getInitialState: function() {
-    return {
-      complete: (!!this.props.complete) || false
-    };
+  handleChange: function() {
+    this.setState({complete: !this.state.complete})
   },
-  handleChange: function(){
-    this.setState({
-      complete: !this.state.complete 
-    });
+  getInitialState: function() {
+    return ({complete: this.props.todo_is_completed});
   },
   render: function() {
-    var labelStyle={
-      'textDecoration': this.state.complete?'line-through':'' 
+    var componentStyle={
+      'textDecoration': this.state.complete ?'line-through':'',
+      'color': 'gray'
     };
     return (
       <li key={this.props.key}>
-        <label style={labelStyle}><TodoCheckbox />{this.props.children.toString()}</label>
+        <label style={componentStyle}><TodoCheckbox initialState={this.state.complete} parentAction={this.handleChange} />{this.props.children.toString()}</label>
       </li>
     ) 
   }
@@ -125,14 +122,12 @@ var TodoSubmitButton = React.createClass({
 });
 
 var TodoCheckbox = React.createClass({
-  getInitialState: function() {
-    return {
-      complete: (!!this.props.complete) || false
-    };
+  onChange: function() {
+    this.setState({isChecked: !this.state.isChecked});
   },
   render: function() {
     return (
-      <input className="todo-checkbox" ref="complete" defaultChecked={this.state.complete} type="checkbox" name="todo_is_completed" />
+      <input className="todo-checkbox" checked={this.props.initialState} onChange={this.props.parentAction} type="checkbox" name="todo_is_completed" />
     );
   }
 });

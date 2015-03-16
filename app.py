@@ -57,7 +57,8 @@ api_manager.create_api(Todo,
                        collection_name='todos', 
                        url_prefix='/api/v1', 
                        exclude_columns=['created_at', 'updated_at'], 
-                       methods=['GET', 'POST', 'UPDATE'])
+                       results_per_page=30, 
+                       methods=['GET', 'POST', 'PATCH'])
 
 if __name__ == '__main__':
     app.run()

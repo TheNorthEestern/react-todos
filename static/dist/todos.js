@@ -1,4 +1,4 @@
-var TodoContainer = React.createClass({
+var TodoContainer = React.createClass({displayName: "TodoContainer",
   getInitialState: function() {
     return {data: [], numRemaining: 0};
   },
@@ -50,20 +50,20 @@ var TodoContainer = React.createClass({
   },
   render: function() {
     return ( 
-      <div className="todo-container">
-        <h1 className="todo-container-title">Todos</h1>
-        <TodoForm onTodoSubmit={this.handleTodoSubmission} url={this.props.url} />
-        <TodoList numRemaining={this.incrementNumRemaining} ref="theTodoList" data={this.state.data} url={this.props.url} />
-        <footer className="todo-list-footer">
-          <GenericCounter ref="completedTodoCounter" initialCount={0}/>
-          <TodoCheckboxManager checkAllMembers={this.finishAllTasks} />
-        </footer>
-      </div>
+      React.createElement("div", {className: "todo-container"}, 
+        React.createElement("h1", {className: "todo-container-title"}, "Todos"), 
+        React.createElement(TodoForm, {onTodoSubmit: this.handleTodoSubmission, url: this.props.url}), 
+        React.createElement(TodoList, {numRemaining: this.incrementNumRemaining, ref: "theTodoList", data: this.state.data, url: this.props.url}), 
+        React.createElement("footer", {className: "todo-list-footer"}, 
+          React.createElement(GenericCounter, {ref: "completedTodoCounter", initialCount: 0}), 
+          React.createElement(TodoCheckboxManager, {checkAllMembers: this.finishAllTasks})
+        )
+      )
     );
   }
 });
 
-var TodoForm = React.createClass({
+var TodoForm = React.createClass({displayName: "TodoForm",
   handleSubmit: function(e) {
     e.preventDefault();
     var todoText = React.findDOMNode(this.refs.todoText).value.trim();
@@ -80,38 +80,38 @@ var TodoForm = React.createClass({
   },
   render: function() {
     return (
-      <form className="todo-form">
-        <input type="text" placeholder="What needs to be done?" ref="todoText" />
-        <TodoSubmitButton parentFormSubmissionFn={this.handleSubmit}/>
-      </form>  
+      React.createElement("form", {className: "todo-form"}, 
+        React.createElement("input", {type: "text", placeholder: "What needs to be done?", ref: "todoText"}), 
+        React.createElement(TodoSubmitButton, {parentFormSubmissionFn: this.handleSubmit})
+      )  
     );
   }
 });
 
-var TodoList = React.createClass({
+var TodoList = React.createClass({displayName: "TodoList",
   render: function() {
     var todos = this.props.data.map(function(todo, i){
       if (!todo.todo_is_completed) this.props.numRemaining();
       return (
-        <TodoItem key={todo.id} 
-                  ref={'todo' + i} 
-                  todoID={todo.id} 
-                  todo_is_completed={todo.todo_is_completed} url={this.props.url}>
-          {todo.todo_text}
-        </TodoItem>
+        React.createElement(TodoItem, {key: todo.id, 
+                  ref: 'todo' + i, 
+                  todoID: todo.id, 
+                  todo_is_completed: todo.todo_is_completed, url: this.props.url}, 
+          todo.todo_text
+        )
       ) 
     }.bind(this))
     return (
-      <section>
-        <ul>
-          {todos}
-        </ul>
-      </section> 
+      React.createElement("section", null, 
+        React.createElement("ul", null, 
+          todos
+        )
+      ) 
     );
   }
 });
 
-var TodoItem = React.createClass({
+var TodoItem = React.createClass({displayName: "TodoItem",
   updateTodo: function(updatedTodo) {
     $.ajax({
       url: this.props.url + '/' + this.props.todoID,
@@ -156,54 +156,54 @@ var TodoItem = React.createClass({
       'color': 'gray'
     };
     return (
-      <li key={this.props.key}>
-        <label style={componentStyle}><TodoCheckbox currentState={this.state.complete} 
-                                                    parentAction={this.handleChange} 
-                                                    />{this.props.children.toString()}</label>
-      </li>
+      React.createElement("li", {key: this.props.key}, 
+        React.createElement("label", {style: componentStyle}, React.createElement(TodoCheckbox, {currentState: this.state.complete, 
+                                                    parentAction: this.handleChange}
+                                                    ), this.props.children.toString())
+      )
     ) 
   }
 })
 
-var TodoSubmitButton = React.createClass({
+var TodoSubmitButton = React.createClass({displayName: "TodoSubmitButton",
   render: function() {
     return (
-      <input onClick={this.props.parentFormSubmissionFn} type="submit" value="Add Todo" className="todo-submit-button" /> 
+      React.createElement("input", {onClick: this.props.parentFormSubmissionFn, type: "submit", value: "Add Todo", className: "todo-submit-button"}) 
     );
   }
 });
 
-var TodoCheckbox = React.createClass({
+var TodoCheckbox = React.createClass({displayName: "TodoCheckbox",
   onChange: function() {
     this.setState({isChecked: !this.state.isChecked});
   },
   render: function() {
     return (
-      <input className="todo-checkbox" checked={this.props.currentState} onChange={this.props.parentAction} type="checkbox" name="todo_is_completed" />
+      React.createElement("input", {className: "todo-checkbox", checked: this.props.currentState, onChange: this.props.parentAction, type: "checkbox", name: "todo_is_completed"})
     );
   }
 });
 
-var TodoCheckboxManager = React.createClass({
+var TodoCheckboxManager = React.createClass({displayName: "TodoCheckboxManager",
   render: function() {
     return (
-      <p className="all-complete" onClick={this.props.checkAllMembers} ref="checkboxManager">Mark all as complete</p> 
+      React.createElement("p", {className: "all-complete", onClick: this.props.checkAllMembers, ref: "checkboxManager"}, "Mark all as complete") 
     ) 
   }
 });
 
-var GenericCounter = React.createClass({
+var GenericCounter = React.createClass({displayName: "GenericCounter",
   getInitialState: function() {
     return {count: this.props.initialCount}; 
   },
   render: function() {
     return (
-      <p className="remaining-text">{this.state.count} item(s) left (works only on page load)</p>
+      React.createElement("p", {className: "remaining-text"}, this.state.count, " item(s) left (works only on page load)")
     );
   }
 });
 
 React.render(
-  <TodoContainer url="http://localhost:5000/api/v1/todos"/>,
+  React.createElement(TodoContainer, {url: "http://localhost:5000/api/v1/todos"}),
   document.getElementById('todo-list')
 );

@@ -15,15 +15,16 @@ var TodoContainer = React.createClass({
     });
   },
   handleTodoSubmission: function(todo) {
-    var todos = this.state.data;
-    var newTodos = todos.concat([todo]);
-    this.setState({data: newTodos});
     $.ajax({
       url: this.props.url,
       contentType:'application/json',
       method: 'post',
       data: JSON.stringify(todo),
       success: function(data) {
+        var todos = this.state.data;
+        todo.id = data.id;
+        var newTodos = todos.concat([todo]);
+        this.setState({data: newTodos});
         console.log(data, "created")
       }.bind(this),
       error: function(xhr, status, err) {
@@ -39,11 +40,8 @@ var TodoContainer = React.createClass({
       } 
     }
   },
-  incrementNumRemaining: function() {
-    this.refs.completedTodoCounter.state.count++;
-  },
-  decrementNumRemaining: function() {
-    this.refs.completedTodoCounter.state.count--;
+  getCount: function() {
+    return this.refs.theTodoList.state.count;
   },
   componentDidMount: function() {
     this.getTodosOnLoad();
@@ -53,9 +51,9 @@ var TodoContainer = React.createClass({
       <div className="todo-container">
         <h1 className="todo-container-title">Todos</h1>
         <TodoForm onTodoSubmit={this.handleTodoSubmission} url={this.props.url} />
-        <TodoList numRemaining={this.incrementNumRemaining} ref="theTodoList" data={this.state.data} url={this.props.url} />
+        <TodoList ref="theTodoList" data={this.state.data} url={this.props.url} />
         <footer className="todo-list-footer">
-          <GenericCounter ref="completedTodoCounter" initialCount={0}/>
+          <GenericCounter ref="completedTodoCounter" initialCount={this.getCount}/>
           <TodoCheckboxManager checkAllMembers={this.finishAllTasks} />
         </footer>
       </div>
@@ -89,9 +87,14 @@ var TodoForm = React.createClass({
 });
 
 var TodoList = React.createClass({
+  getInitialState: function() {
+    return {count: 0}; 
+  },
   render: function() {
     var todos = this.props.data.map(function(todo, i){
-      if (!todo.todo_is_completed) this.props.numRemaining();
+      if (!todo.todo_is_completed) {
+        this.state.count++;
+      }
       return (
         <TodoItem key={todo.id} 
                   ref={'todo' + i} 
@@ -156,7 +159,7 @@ var TodoItem = React.createClass({
       'color': 'gray'
     };
     return (
-      <li key={this.props.key}>
+      <li>
         <label style={componentStyle}><TodoCheckbox currentState={this.state.complete} 
                                                     parentAction={this.handleChange} 
                                                     />{this.props.children.toString()}</label>
@@ -193,12 +196,9 @@ var TodoCheckboxManager = React.createClass({
 });
 
 var GenericCounter = React.createClass({
-  getInitialState: function() {
-    return {count: this.props.initialCount}; 
-  },
   render: function() {
     return (
-      <p className="remaining-text">{this.state.count} item(s) left (works only on page load)</p>
+      <p className="remaining-text">Couldn't quite get the correct implementation here.</p>
     );
   }
 });

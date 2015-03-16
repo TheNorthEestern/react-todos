@@ -89,7 +89,8 @@ html, body {
 }
 .remaining-text {
   float: left;
-  font-size: 13px;
+  font-size: 11px;
   color: rgb(180, 180, 180);
+  margin-top: 15px;
   margin-left: 15px;
 }
